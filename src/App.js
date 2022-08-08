@@ -1,23 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import "./App.css";
+import { auth } from "./firebase/init";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword, signOut
+} from "firebase/auth";
 
 function App() {
+  const [user, setUser] = React.useState({});
+
+  function register() {
+    console.log("register!!!!");
+    createUserWithEmailAndPassword(auth, "email@email123.com", "pword123")
+      .then((data) => {
+        console.log(data.user);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  function login() {
+    signInWithEmailAndPassword(auth, "email@email123.com", "pword123")
+    .then(({user}) => {
+      console.log(user);
+      setUser(user);
+    })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  function logout(){
+    signOut(auth);
+    setUser({});
+  }
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <button onClick={register}>Register</button>
+      <button onClick={login}>Login</button>
+      <button onClick={logout}>Logout</button>
+      {user.email}
     </div>
   );
 }
