@@ -15,8 +15,8 @@ function App() {
 
   function createPost(){
     const post = {
-      title: "land a $100k job",
-      description: "finish frontend simplified",
+      title: "Finish Interview Section",
+      description: "Do Frontend Simplified",
       uid:user.uid,
     };
     addDoc(collection(db,"posts"), post);
@@ -32,6 +32,11 @@ function App() {
     const postSnap = await getDoc(postRef);
     const post = postSnap.data();
     console.log(post);
+  }
+  async function getPostByUid(){
+    const postCollectionRef = await query(collection(db,"posts"), where("uid","==",user.uid));
+    const {docs} = await getDocs(postCollectionRef);
+    console.log(docs.map(doc => doc.data()))
   }
   console.log(posts);
   React.useEffect(()=>{
@@ -75,11 +80,15 @@ function App() {
       <button onClick={login}>Login</button>
       <button onClick={logout}>Logout</button>
       {loading ? "loading...": user.email}
-      <button onClick={createPost}>Create Post</button>
-      <button onClick={getAllPosts}>Get All Posts</button>
-      {posts.map(post => post.title)}
       <br/>
+      <button onClick={createPost}>Create Post</button>
+      <br/>
+      <button onClick={getAllPosts}>Get All Posts</button>
+      <br/>
+      {posts.map(post => post.title)}
       <button onClick={getPostById}>Get Post by Id</button>
+      <br/>
+      <button onClick={getPostByUid}>Get Post by UID</button>
     </div>
   );
 }
