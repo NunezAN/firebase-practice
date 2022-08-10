@@ -1,7 +1,7 @@
 import React from 'react';
 import "./App.css";
 import { auth, db } from "./firebase/init";
-import{collection, addDoc} from "firebase/firestore";
+import{collection, addDoc, getDocs, getDoc, doc , query, where} from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
@@ -11,15 +11,29 @@ import {
 function App() {
   const [user, setUser] = React.useState({});
   const [loading, setLoading] = React.useState(true);
+  const [posts, setPosts]= React.useState([]);
 
   function createPost(){
     const post = {
       title: "land a $100k job",
       description: "finish frontend simplified",
+      uid:user.uid,
     };
     addDoc(collection(db,"posts"), post);
   }
 
+  async function getAllPosts(){
+    const {docs} = await getDocs(collection(db,"posts"));
+    setPosts(docs.map(doc => ({...doc.data(),id: doc.id})));
+  }
+  async function getPostById(){
+    const hardId = "7wkqcOrnMsJCJFM9JT6O";
+    const postRef = doc(db,"posts", hardId);
+    const postSnap = await getDoc(postRef);
+    const post = postSnap.data();
+    console.log(post);
+  }
+  console.log(posts);
   React.useEffect(()=>{
     onAuthStateChanged(auth,(user)=>{
       setLoading(false);
@@ -62,6 +76,10 @@ function App() {
       <button onClick={logout}>Logout</button>
       {loading ? "loading...": user.email}
       <button onClick={createPost}>Create Post</button>
+      <button onClick={getAllPosts}>Get All Posts</button>
+      {posts.map(post => post.title)}
+      <br/>
+      <button onClick={getPostById}>Get Post by Id</button>
     </div>
   );
 }
